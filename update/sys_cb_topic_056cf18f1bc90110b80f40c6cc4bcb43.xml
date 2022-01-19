@@ -1,0 +1,1176 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_cb_topic">
+    <sys_cb_topic action="INSERT_OR_UPDATE">
+        <applicability/>
+        <applicability_mode>query</applicability_mode>
+        <autopilot_topic>false</autopilot_topic>
+        <category>3efd22da0b203300a1b16c2367673a10</category>
+        <channels/>
+        <connect_queue/>
+        <description>ITSM conversation for searching and submitting catalog items</description>
+        <expose_on_palette>false</expose_on_palette>
+        <flexible_conversation_switching>false</flexible_conversation_switching>
+        <graph>{
+  "graph_api_version": "1.0.36",
+  "goals": {
+    "primary": {
+      "id": "primary",
+      "trigger": {
+        "type": "primary"
+      },
+      "name": "primary",
+      "applicability": "",
+      "description": "",
+      "nodes": {
+        "b12d1632dade44948dbf3c555b162509": {
+          "id": "b12d1632dade44948dbf3c555b162509",
+          "stepType": "Start",
+          "name": "Start",
+          "greetingResponse": {
+            "mode": "simple",
+            "value": ""
+          },
+          "applicability": {
+            "mode": "query",
+            "value": ""
+          }
+        },
+        "e02be8e8ddf845e6872d92601607c60d": {
+          "id": "e02be8e8ddf845e6872d92601607c60d",
+          "stepType": "TerminateGoal",
+          "name": "End",
+          "confirmationMessage": {
+            "mode": "simple",
+            "value": ""
+          },
+          "applicability": {
+            "mode": "query",
+            "value": ""
+          }
+        },
+        "01cbd06657d64ce2a6c2af12f942a658": {
+          "id": "01cbd06657d64ce2a6c2af12f942a658",
+          "stepType": "Prompt",
+          "name": "Search Term",
+          "prompt": {
+            "value": [
+              {
+                "type": "paragraph",
+                "children": [
+                  {
+                    "text": ""
+                  },
+                  {
+                    "text": "What are you looking for?"
+                  },
+                  {
+                    "text": ""
+                  }
+                ]
+              }
+            ],
+            "mode": "simple"
+          },
+          "confirmMessage": {
+            "value": "",
+            "mode": "simple"
+          },
+          "acknowledgeMsg": {
+            "value": "",
+            "mode": "simple"
+          },
+          "applicability": {
+            "value": "vaInputs.search_againISEMPTY",
+            "mode": "query"
+          },
+          "optional": false,
+          "defaultValue": {
+            "value": "",
+            "mode": "simple"
+          },
+          "withNluUserInput": true,
+          "skipIfFulfilled": true,
+          "entity": {
+            "id": "",
+            "label": ""
+          },
+          "variableId": "b0f8edf4ff564c36869d6c3ab3d42c0b",
+          "skippable": {
+            "value": "",
+            "mode": "query"
+          },
+          "inputType": {
+            "format": "Text",
+            "script": ""
+          }
+        },
+        "4a60a9b1f1d846f9bf447438d309dc6f": {
+          "id": "4a60a9b1f1d846f9bf447438d309dc6f",
+          "stepType": "ReusableTopic",
+          "name": "Search Catalog Item",
+          "fields": [],
+          "reusableTopicChoice": "Search Catalog Item",
+          "reusableTopicId": "ccaacd71c3a3330012d1758a7ff57ecd",
+          "inputs": {
+            "catalogs": {
+              "value": "(function execute() {\n    function getCatalogM2M(portalId){\n        var gr = new GlideRecord('m2m_sp_portal_catalog');\n        if (gr.isValid()) {\n          gr.addActiveQuery();\n          gr.addQuery('sp_portal', portalId);\n          gr.addQuery('sc_catalog.active', true);\n          gr.orderBy('order');\n          gr.orderBy('sc_catalog.active');\n        }\n        else {\n          gr = new GlideRecord('sp_portal');\n          gr.addQuery('sys_id', portalId);\n        }\n        gr.setWorkflow(false)\n        gr.query();\n        return gr;\n    }\n    var suffix = vaVars.portalName;\n    if (suffix) {\n        var catalogs = \"\";\n        var gr = new GlideRecord('sp_portal');\n        gr.addQuery('url_suffix', suffix);\n        gr.setWorkflow(false)\n        gr.query();\n        gr.next();\n        var portalId = gr.getUniqueValue();\n        vaVars.portalId = portalId;\n        var m2mGR = getCatalogM2M(portalId);\n        if (m2mGR.getRowCount() &gt; 0) {\n            m2mGR.next();\n            catalogs += m2mGR.getValue('sc_catalog');\n            while(m2mGR.next()){\n                catalogs += ',';\n                catalogs += m2mGR.getValue('sc_catalog')\n\n            }\n        }\n    return catalogs;\n    }\n    return '';\n})()\n",
+              "mode": "script",
+              "type": "String"
+            },
+            "query_term": {
+              "value": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    },
+                    {
+                      "type": "datapill",
+                      "dataPill": {
+                        "value": "{{vaInputs.search_term}}",
+                        "displayValue": "vaInputs➛search_term"
+                      },
+                      "children": [
+                        {
+                          "text": ""
+                        }
+                      ]
+                    },
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ],
+              "mode": "simple",
+              "type": "String"
+            },
+            "result_limit": {
+              "value": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    },
+                    {
+                      "text": "5"
+                    },
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ],
+              "mode": "simple",
+              "type": "String"
+            }
+          },
+          "outputs": [
+            {
+              "id": "5a1c8094c89948f4b1a2f931f4a0324d",
+              "value": "catalog_item_id",
+              "mapping": "catalog_item_id",
+              "preventDisable": true
+            },
+            {
+              "id": "ba653be16fe548e083131b0caac5e294",
+              "value": "item_type",
+              "mapping": "item_type",
+              "preventDisable": false
+            },
+            {
+              "id": "2d11c782dea34f198fa10a11efa383c0",
+              "value": "is_conversational",
+              "mapping": "is_conversational",
+              "preventDisable": true
+            }
+          ],
+          "variableIds": [
+            "5a1c8094c89948f4b1a2f931f4a0324d",
+            "ba653be16fe548e083131b0caac5e294",
+            "2d11c782dea34f198fa10a11efa383c0"
+          ],
+          "outdatedNote": false,
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          }
+        },
+        "666b0ad0f8e744c19886b06b9107b835": {
+          "id": "666b0ad0f8e744c19886b06b9107b835",
+          "stepType": "Decision",
+          "name": "Decision"
+        },
+        "95055dd0e74243a6b6be07649eaadd4d": {
+          "id": "95055dd0e74243a6b6be07649eaadd4d",
+          "stepType": "TextOutput",
+          "name": "Try Again",
+          "value": {
+            "value": [
+              {
+                "type": "paragraph",
+                "children": [
+                  {
+                    "text": ""
+                  },
+                  {
+                    "text": "Okay, Let's try again"
+                  },
+                  {
+                    "text": ""
+                  }
+                ]
+              }
+            ],
+            "mode": "simple"
+          },
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          },
+          "secure": false
+        },
+        "5c645106bdbe4d5db58273f486dfd00c": {
+          "id": "5c645106bdbe4d5db58273f486dfd00c",
+          "stepType": "Decision",
+          "name": "Decision"
+        },
+        "b75b31da700c472d972cd4160e87c98a": {
+          "id": "b75b31da700c472d972cd4160e87c98a",
+          "stepType": "LinkOutput",
+          "name": "Link Output",
+          "url": {
+            "value": "(function execute() {\n    var item = new sn_sc.CatItem(vaInputs.catalog_item_id);\n\n    if (item &amp;&amp; item.getRecordClass() === \"sc_cat_item_guide\")\n        return vaVars.baseUri + vaVars.portalName + '?id=sc_cat_item_guide&amp;sys_id=' + vaInputs.catalog_item_id + '&amp;referrer=va';\n    \n    return vaVars.baseUri + vaVars.portalName + '?id=sc_cat_item&amp;sys_id=' + vaInputs.catalog_item_id + '&amp;referrer=va';\n})()",
+            "mode": "script"
+          },
+          "label": {
+            "value": "(function execute() {\n    var item = new sn_sc.CatItem(vaInputs.catalog_item_id);\n    if (item) {\n        var catItemJson = item.read({\n            'name' : ''\n        }, false);\n        return catItemJson.name || '';\n    }\n    return '';\n})()\n",
+            "mode": "script"
+          },
+          "header": {
+            "value": [
+              {
+                "type": "paragraph",
+                "children": [
+                  {
+                    "text": ""
+                  },
+                  {
+                    "text": "Use the link below to submit your request"
+                  },
+                  {
+                    "text": ""
+                  }
+                ]
+              }
+            ],
+            "mode": "simple"
+          },
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          },
+          "linkType": "single",
+          "introMsg": {
+            "value": "",
+            "mode": "simple"
+          },
+          "listOfLinks": ""
+        },
+        "f82ee20970ef424e844e20adc6e9c097": {
+          "id": "f82ee20970ef424e844e20adc6e9c097",
+          "stepType": "ReusableTopic",
+          "name": "Request Catalog Item",
+          "fields": [],
+          "reusableTopicChoice": "Request Catalog Item",
+          "reusableTopicId": "a39acd71c3a3330012d1758a7ff57eb6",
+          "inputs": {
+            "catalog_item_id": {
+              "value": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    },
+                    {
+                      "type": "datapill",
+                      "dataPill": {
+                        "value": "{{vaInputs.catalog_item_id}}",
+                        "displayValue": "vaInputs➛catalog_item_id"
+                      },
+                      "children": [
+                        {
+                          "text": ""
+                        }
+                      ]
+                    },
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ],
+              "mode": "simple",
+              "type": "String"
+            },
+            "execute_contextual_search": {
+              "value": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    },
+                    {
+                      "text": "false"
+                    },
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ],
+              "mode": "simple",
+              "type": "String"
+            },
+            "confirm_catalog_item": {
+              "value": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    },
+                    {
+                      "text": "true"
+                    },
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ],
+              "mode": "simple",
+              "type": "String"
+            }
+          },
+          "outputs": [
+            {
+              "id": "662097e1b85f4044a1ff82e156b5456c",
+              "value": "record_id",
+              "mapping": "record_id",
+              "preventDisable": true
+            },
+            {
+              "id": "f7ffbb0347f749869b04eb320a66b66e",
+              "value": "record_table",
+              "mapping": "record_table",
+              "preventDisable": true
+            },
+            {
+              "id": "13702bc742124d2285c5541e853ee2e8",
+              "value": "variables",
+              "mapping": "variables",
+              "preventDisable": false
+            }
+          ],
+          "variableIds": [
+            "662097e1b85f4044a1ff82e156b5456c",
+            "f7ffbb0347f749869b04eb320a66b66e",
+            "13702bc742124d2285c5541e853ee2e8"
+          ],
+          "outdatedNote": false,
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          }
+        },
+        "f3b42ffa8501491ca00a2d24c728bf06": {
+          "id": "f3b42ffa8501491ca00a2d24c728bf06",
+          "stepType": "Decision",
+          "name": "Decision"
+        },
+        "b975056aa9c44a6ca4ea7822b1221df8": {
+          "id": "b975056aa9c44a6ca4ea7822b1221df8",
+          "stepType": "TextOutput",
+          "name": "Request Complete Message",
+          "value": {
+            "value": [
+              {
+                "type": "paragraph",
+                "children": [
+                  {
+                    "text": ""
+                  },
+                  {
+                    "text": "Your request has been submitted. Here are the details:"
+                  },
+                  {
+                    "text": ""
+                  }
+                ]
+              }
+            ],
+            "mode": "simple"
+          },
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          },
+          "secure": false
+        },
+        "a8f4ff0f45e94966bd67e88a3e3b1dcd": {
+          "id": "a8f4ff0f45e94966bd67e88a3e3b1dcd",
+          "stepType": "Decision",
+          "name": "Decision"
+        },
+        "3fe8de778e494cceaa4e13f021166e70": {
+          "stepType": "ChoicePrompt",
+          "name": "Search Again",
+          "prompt": {
+            "value": [
+              {
+                "type": "paragraph",
+                "children": [
+                  {
+                    "text": ""
+                  },
+                  {
+                    "text": "Do you want to search again?"
+                  },
+                  {
+                    "text": ""
+                  }
+                ]
+              }
+            ],
+            "mode": "simple"
+          },
+          "confirmMessage": {
+            "value": "",
+            "mode": "simple"
+          },
+          "acknowledgeMsg": {
+            "value": "",
+            "mode": "simple"
+          },
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          },
+          "optional": false,
+          "defaultValue": {
+            "value": "",
+            "mode": "simple"
+          },
+          "variableId": "8748663df8944c0b82bc6a3e0c0e98fd",
+          "id": "3fe8de778e494cceaa4e13f021166e70",
+          "withNluUserInput": true,
+          "skipIfFulfilled": true,
+          "entity": {
+            "id": "",
+            "label": ""
+          },
+          "skippable": {
+            "value": "",
+            "mode": "query"
+          },
+          "cardMetadata": {
+            "mode": "card",
+            "metadataScript": "",
+            "cardTemplate": "",
+            "cardFields": {},
+            "cardDefinition": {}
+          },
+          "hasCardHeader": false
+        },
+        "a2de048e363745c4a53d74167a314210": {
+          "id": "a2de048e363745c4a53d74167a314210",
+          "stepType": "TextOutput",
+          "name": "Item not found",
+          "value": {
+            "value": [
+              {
+                "type": "paragraph",
+                "children": [
+                  {
+                    "text": ""
+                  },
+                  {
+                    "text": "I couldn't find any item that matches your search query"
+                  },
+                  {
+                    "text": ""
+                  }
+                ]
+              }
+            ],
+            "mode": "simple"
+          },
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          },
+          "secure": false
+        },
+        "cd7a3cd4710b476fb64285405b3177e1": {
+          "id": "cd7a3cd4710b476fb64285405b3177e1",
+          "stepType": "Component",
+          "name": "No Deflection",
+          "fields": [],
+          "reusableTopicId": "7fb4ca055303201033cdddeeff7b12b3",
+          "reusableTopicChoice": "Deflection",
+          "sourceType": "TOPIC_BLOCK",
+          "loading": false,
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          },
+          "inputs": {
+            "deflection_configuration": {
+              "value": "5292005253213010000dddeeff7b126c",
+              "mode": "string",
+              "type": "Reference",
+              "table": "ssa_deflection_configuration"
+            },
+            "deflection_pattern": {
+              "value": "9ee3409253213010000dddeeff7b123b",
+              "mode": "string",
+              "type": "Reference",
+              "table": "ssa_deflection_pattern"
+            },
+            "activity_table": {
+              "value": "",
+              "mode": "simple",
+              "type": "String"
+            },
+            "activity_ids": {
+              "value": "",
+              "mode": "simple",
+              "type": "String"
+            }
+          },
+          "outputs": [],
+          "outdatedNote": false,
+          "variableIds": []
+        },
+        "b2526f10875145e6b768abe8c0c36dc0": {
+          "id": "b2526f10875145e6b768abe8c0c36dc0",
+          "stepType": "Component",
+          "name": "Deflection: Request Complete",
+          "fields": [],
+          "reusableTopicId": "7fb4ca055303201033cdddeeff7b12b3",
+          "reusableTopicChoice": "Deflection",
+          "sourceType": "TOPIC_BLOCK",
+          "loading": false,
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          },
+          "inputs": {
+            "deflection_configuration": {
+              "value": "5292005253213010000dddeeff7b126c",
+              "mode": "string",
+              "type": "Reference",
+              "table": "ssa_deflection_configuration"
+            },
+            "deflection_pattern": {
+              "value": "f063885253213010000dddeeff7b1221",
+              "mode": "string",
+              "type": "Reference",
+              "table": "ssa_deflection_pattern"
+            },
+            "activity_table": {
+              "value": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    },
+                    {
+                      "type": "datapill",
+                      "dataPill": {
+                        "value": "{{vaInputs.record_table}}",
+                        "displayValue": "Input Variables➛Record_table"
+                      },
+                      "children": [
+                        {
+                          "text": ""
+                        }
+                      ]
+                    },
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ],
+              "mode": "string",
+              "type": "String"
+            },
+            "activity_ids": {
+              "value": [
+                {
+                  "type": "paragraph",
+                  "children": [
+                    {
+                      "text": ""
+                    },
+                    {
+                      "type": "datapill",
+                      "dataPill": {
+                        "value": "{{vaInputs.record_id}}",
+                        "displayValue": "Input Variables➛Record_id"
+                      },
+                      "children": [
+                        {
+                          "text": ""
+                        }
+                      ]
+                    },
+                    {
+                      "text": ""
+                    }
+                  ]
+                }
+              ],
+              "mode": "string",
+              "type": "String"
+            }
+          },
+          "outputs": [],
+          "outdatedNote": false,
+          "variableIds": []
+        },
+        "b24bc6b0443a44ccaf622bd58513bbf2": {
+          "id": "b24bc6b0443a44ccaf622bd58513bbf2",
+          "stepType": "Component",
+          "name": "Deflection: Link Provided",
+          "fields": [],
+          "reusableTopicId": "7fb4ca055303201033cdddeeff7b12b3",
+          "reusableTopicChoice": "Deflection",
+          "sourceType": "TOPIC_BLOCK",
+          "loading": false,
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          },
+          "inputs": {
+            "deflection_configuration": {
+              "value": "5292005253213010000dddeeff7b126c",
+              "mode": "string",
+              "type": "Reference",
+              "table": "ssa_deflection_configuration"
+            },
+            "deflection_pattern": {
+              "value": "6eb34c5253213010000dddeeff7b12be",
+              "mode": "string",
+              "type": "Reference",
+              "table": "ssa_deflection_pattern"
+            },
+            "activity_table": {
+              "value": "",
+              "mode": "simple",
+              "type": "String"
+            },
+            "activity_ids": {
+              "value": "",
+              "mode": "simple",
+              "type": "String"
+            }
+          },
+          "outputs": [],
+          "outdatedNote": false,
+          "variableIds": []
+        },
+        "b15a84127df7488ca19994b2d94cc1b5": {
+          "id": "b15a84127df7488ca19994b2d94cc1b5",
+          "stepType": "Prompt",
+          "name": "Search",
+          "prompt": {
+            "value": [
+              {
+                "type": "paragraph",
+                "children": [
+                  {
+                    "text": "What are you looking for?"
+                  }
+                ]
+              }
+            ],
+            "mode": "simple"
+          },
+          "confirmMessage": {
+            "value": "",
+            "mode": "simple"
+          },
+          "acknowledgeMsg": {
+            "value": "",
+            "mode": "simple"
+          },
+          "applicability": {
+            "value": "vaInputs.search_againISNOTEMPTY",
+            "mode": "query"
+          },
+          "skippable": {
+            "value": "",
+            "mode": "query"
+          },
+          "defaultValue": {
+            "value": "",
+            "mode": "simple"
+          },
+          "withNluUserInput": false,
+          "skipIfFulfilled": false,
+          "variableId": "e66cf296a13a47509af2d1e2dc1278b7",
+          "inputType": {
+            "format": "Text",
+            "script": ""
+          }
+        },
+        "541f1b50960b453091ffcfccbaf7647f": {
+          "id": "541f1b50960b453091ffcfccbaf7647f",
+          "name": "Set search term",
+          "script": "(function execute() {\n    if(!gs.nil(vaInputs.search))\n    vaInputs.search_term = vaInputs.search;\n})()\n",
+          "stepType": "ScriptAction",
+          "applicability": {
+            "mode": "query",
+            "value": ""
+          }
+        },
+        "5f567eacca324033a12e53af27f4468c": {
+          "id": "5f567eacca324033a12e53af27f4468c",
+          "stepType": "ScriptOutput",
+          "name": "Submitted Request Record",
+          "output_type": "single_part",
+          "script": "(function execute() {\n\n    var tableName = vaInputs.record_table.getValue();\n    var recordId = vaInputs.record_id.getValue();\n\n    var link = '';\n    var screenId = '';\n    if (vaVars.portalName === 'mesp') {\n        var mobileDLink = new global.MobileDeepLinkGenerator('request');\n        if (tableName == 'sc_req_item')\n            screenId = '7516f9d787232300e0ef0cf888cb0b4d';\n        else if (tableName == 'sc_request')\n            screenId = '276dd3edb79033001befcd58de11a9c7';\n        else if (tableName == 'incident')\n            screenId = 'ebb94d9c0f2033001befa68ca8767e4e';\n        else\n            screenId = 'd39eb2db87772300e0ef0cf888cb0bcb';\n\n        link = mobileDLink.getFormScreenLink(screenId, tableName, recordId);\n    } else {\n        link = vaVars.baseUri + vaVars.portalName + \"?id=ticket&amp;table=\" + tableName +\"&amp;sys_id=\" + recordId;\n    }\n\n    var title = '';\n    var subtitle = '';\n    var fields = [];\n\n    var gr = new GlideRecord(tableName);\n    gr.addQuery('sys_id',recordId);\n    gr.query();\n    title = gr.getClassDisplayValue();\n    if(gr.next()){\n        subtitle = gr.getValue('task_effective_number').toString();\n        fields.push({\"fieldLabel\": gr.getElement('requested_for').getLabel(), \"fieldValue\": gr.getDisplayValue('requested_for').toString()});\n        fields.push({\"fieldLabel\": gr.getElement('cat_item').getLabel(), \"fieldValue\": gr.getDisplayValue('cat_item').toString()});\n        fields.push({\"fieldLabel\": gr.getElement('state').getLabel(), \"fieldValue\": gr.getDisplayValue('state').toString()});\n    }\n    \n    var card_data = JSON.stringify({\n            \"title\":title,\n            \"subtitle\":subtitle,\n            \"fields\":fields,\n            \"url\":link.toString()\n      });\n    return vaSystem.renderCard(\"Card\", card_data); \n})()\n",
+          "applicability": {
+            "value": "",
+            "mode": "query"
+          }
+        }
+      },
+      "edges": [
+        {
+          "id": "4b6016f01b084c44886d35ce7480021b",
+          "edgeType": "Branch",
+          "source": "f3b42ffa8501491ca00a2d24c728bf06",
+          "target": "3fe8de778e494cceaa4e13f021166e70",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "value": "record_idEMPTYSTRING",
+            "mode": "query"
+          },
+          "label": "Catalog Request Not Complete"
+        },
+        {
+          "id": "a801b2a3979d4a2c8da8898e2e546d96",
+          "edgeType": "Edge",
+          "source": "5f567eacca324033a12e53af27f4468c",
+          "target": "b2526f10875145e6b768abe8c0c36dc0",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "b78fb0f71e2a4b98acc3d4dd5b6b3cb3",
+          "edgeType": "Edge",
+          "source": "4a60a9b1f1d846f9bf447438d309dc6f",
+          "target": "666b0ad0f8e744c19886b06b9107b835",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "db5219eacf3f4884b3b710e355d22688",
+          "edgeType": "Branch",
+          "source": "666b0ad0f8e744c19886b06b9107b835",
+          "target": "5c645106bdbe4d5db58273f486dfd00c",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n    /* Return true or false to indicate the branch condition's applicability.\n       For example:\n\n       var applies = vaInputs.first_name == 'Bill' ? true : false;\n       return applies;\n    */\n   return !!vaInputs.catalog_item_id.getValue() &amp;&amp; vaInputs.catalog_item_id.getValue() != \"-1\";\n})()\n"
+          },
+          "label": "Recieved an ItemID"
+        },
+        {
+          "id": "04f4f22a24314eafa947a7e7c9a52734",
+          "edgeType": "Edge",
+          "source": "b12d1632dade44948dbf3c555b162509",
+          "target": "01cbd06657d64ce2a6c2af12f942a658",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "676e180eec2b47a8854948a6daa6f882",
+          "edgeType": "Edge",
+          "source": "95055dd0e74243a6b6be07649eaadd4d",
+          "target": "01cbd06657d64ce2a6c2af12f942a658",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "49a55c02225f437891e7551fd03db118",
+          "edgeType": "Branch",
+          "source": "5c645106bdbe4d5db58273f486dfd00c",
+          "target": "b75b31da700c472d972cd4160e87c98a",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n    return vaInputs.is_conversational.getValue() != 'true';\n})()\n"
+          },
+          "label": "Not Supported"
+        },
+        {
+          "id": "0da82c11a3d941d6aa1c8d790935ebc8",
+          "edgeType": "Branch",
+          "source": "5c645106bdbe4d5db58273f486dfd00c",
+          "target": "f82ee20970ef424e844e20adc6e9c097",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n    return vaInputs.is_conversational.getValue() == 'true';\n})()\n"
+          },
+          "label": "Is Supported"
+        },
+        {
+          "id": "980bbc64a61c44c49fc13ce7fe8b7ce4",
+          "edgeType": "Edge",
+          "source": "f82ee20970ef424e844e20adc6e9c097",
+          "target": "f3b42ffa8501491ca00a2d24c728bf06",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "11ac2c40c24740648c0c03b7ca69750f",
+          "edgeType": "Branch",
+          "source": "f3b42ffa8501491ca00a2d24c728bf06",
+          "target": "b75b31da700c472d972cd4160e87c98a",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n    return !!vaInputs.record_id.getValue() &amp;&amp; vaInputs.record_id.getValue() == '-1';\n})()\n"
+          },
+          "label": "Item has no VA Support"
+        },
+        {
+          "id": "fe6f0ae9062d4eb998ad2754ea3ffa90",
+          "edgeType": "Branch",
+          "source": "f3b42ffa8501491ca00a2d24c728bf06",
+          "target": "b975056aa9c44a6ca4ea7822b1221df8",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n    return !!vaInputs.record_id.getValue() &amp;&amp; vaInputs.record_id.getValue() != '-1';\n})()\n"
+          },
+          "label": "Catalog Request Complete"
+        },
+        {
+          "id": "0bcfeed0153a449cbe1f48f8e5f69d13",
+          "edgeType": "Branch",
+          "source": "a8f4ff0f45e94966bd67e88a3e3b1dcd",
+          "target": "95055dd0e74243a6b6be07649eaadd4d",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "value": "search_again=1",
+            "mode": "query"
+          },
+          "label": "Yes"
+        },
+        {
+          "id": "f2a5f50a79ad4ed1a51d3be3492892ae",
+          "edgeType": "Edge",
+          "source": "3fe8de778e494cceaa4e13f021166e70",
+          "target": "a8f4ff0f45e94966bd67e88a3e3b1dcd",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "2e5b40d3729949e7a370ee1b7af98cfc",
+          "edgeType": "Branch",
+          "source": "666b0ad0f8e744c19886b06b9107b835",
+          "target": "a2de048e363745c4a53d74167a314210",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "value": "catalog_item_idISEMPTY",
+            "mode": "query"
+          },
+          "label": "Didn't recieve an itemID"
+        },
+        {
+          "id": "25b0fa492fda4de9b771dd515e702d3d",
+          "edgeType": "Edge",
+          "source": "a2de048e363745c4a53d74167a314210",
+          "target": "3fe8de778e494cceaa4e13f021166e70",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "3c82b92b29d249748b009c68afe5e082",
+          "edgeType": "Branch",
+          "source": "666b0ad0f8e744c19886b06b9107b835",
+          "target": "3fe8de778e494cceaa4e13f021166e70",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "mode": "script",
+            "value": "(function execute() {\n    /* Return true or false to indicate the branch condition's applicability.\n       For example:\n\n       var applies = vaInputs.first_name == 'Bill' ? true : false;\n       return applies;\n    */\n    return vaInputs.catalog_item_id.getValue() == \"-1\"\n})()\n"
+          },
+          "label": "itemIid is -1"
+        },
+        {
+          "id": "2da137ca76834438a4ee55722bc7f4bf",
+          "edgeType": "Branch",
+          "source": "a8f4ff0f45e94966bd67e88a3e3b1dcd",
+          "target": "cd7a3cd4710b476fb64285405b3177e1",
+          "sourcePort": "",
+          "targetPort": "",
+          "expression": {
+            "value": "search_again=0",
+            "mode": "query"
+          },
+          "label": "No"
+        },
+        {
+          "id": "a1b4263e31804c09ae090481686c786c",
+          "edgeType": "Edge",
+          "source": "cd7a3cd4710b476fb64285405b3177e1",
+          "target": "e02be8e8ddf845e6872d92601607c60d",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "b8bb37a32f284e8b9a1cc62b2f662e1e",
+          "edgeType": "Edge",
+          "source": "b2526f10875145e6b768abe8c0c36dc0",
+          "target": "e02be8e8ddf845e6872d92601607c60d",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "1ccda184ee864873ae25f9dbd2d3863a",
+          "edgeType": "Edge",
+          "source": "b75b31da700c472d972cd4160e87c98a",
+          "target": "b24bc6b0443a44ccaf622bd58513bbf2",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "15580df38f5c4df6a198dce46de29b77",
+          "edgeType": "Edge",
+          "source": "b24bc6b0443a44ccaf622bd58513bbf2",
+          "target": "e02be8e8ddf845e6872d92601607c60d",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "0d55e12ff5254cfc8c2ea319d7b3d650",
+          "edgeType": "Edge",
+          "source": "01cbd06657d64ce2a6c2af12f942a658",
+          "target": "b15a84127df7488ca19994b2d94cc1b5",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "2c490a26bad8445592efd3ae8b31bf11",
+          "edgeType": "Edge",
+          "source": "b15a84127df7488ca19994b2d94cc1b5",
+          "target": "541f1b50960b453091ffcfccbaf7647f",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "f73932112484469f88f214118e72aeb9",
+          "edgeType": "Edge",
+          "source": "541f1b50960b453091ffcfccbaf7647f",
+          "target": "4a60a9b1f1d846f9bf447438d309dc6f",
+          "sourcePort": "",
+          "targetPort": ""
+        },
+        {
+          "id": "8354de90aea643c6b70bbc8162983db5",
+          "edgeType": "Edge",
+          "source": "b975056aa9c44a6ca4ea7822b1221df8",
+          "target": "5f567eacca324033a12e53af27f4468c",
+          "sourcePort": "",
+          "targetPort": ""
+        }
+      ]
+    }
+  },
+  "variables": {
+    "8fd68b49171846f28288f50f8eb1262f": {
+      "id": "8fd68b49171846f28288f50f8eb1262f",
+      "name": "LiveAgent_application",
+      "value": {
+        "mode": "simple",
+        "value": "itsm"
+      },
+      "varType": "script",
+      "label": "LiveAgent_application",
+      "category": "vaVars"
+    },
+    "84911b6ee60747fd9379bc2600e4d498": {
+      "id": "84911b6ee60747fd9379bc2600e4d498",
+      "value": {
+        "mode": "script",
+        "value": "(function execute() {\n    return gs.getProperty('glide.servlet.uri');\n})()\n"
+      },
+      "name": "baseUri",
+      "label": "baseUri",
+      "varType": "script",
+      "category": "vaVars"
+    },
+    "cf8467c060074eee940f2ca541ed0636": {
+      "id": "cf8467c060074eee940f2ca541ed0636",
+      "value": {
+        "mode": "script",
+        "value": "(function execute() {\n    if (vaContext.deviceType == 'ios' || vaContext.deviceType == 'android')\n        return 'mesp';\n\n    return gs.getProperty('sn_itsm_va.com.snc.itsm.virtualagent.portal_url');\n})()\n"
+      },
+      "name": "portalName",
+      "label": "portalName",
+      "varType": "script",
+      "category": "vaVars"
+    },
+    "b0f8edf4ff564c36869d6c3ab3d42c0b": {
+      "id": "b0f8edf4ff564c36869d6c3ab3d42c0b",
+      "name": "search_term",
+      "label": "Search Term",
+      "varType": "string",
+      "category": "vaInputs",
+      "secure": false,
+      "encryptionSalt": {
+        "value": "MTYyNDI5NTQxMTYxMSBWQSBEZXNpZ25lciBpcyBhd2Vzb21l",
+        "mode": "simple"
+      },
+      "encryptionHashFunction": "SHA-256"
+    },
+    "7e7175ad2f3748409403efade215eaae": {
+      "category": "vaInputs",
+      "id": "7e7175ad2f3748409403efade215eaae",
+      "label": "User",
+      "name": "user",
+      "table": "sys_user",
+      "varType": "reference"
+    },
+    "8748663df8944c0b82bc6a3e0c0e98fd": {
+      "id": "8748663df8944c0b82bc6a3e0c0e98fd",
+      "name": "search_again",
+      "label": "Search Again",
+      "varType": "choice",
+      "choices": [
+        {
+          "label": "No",
+          "value": "0"
+        },
+        {
+          "label": "Yes",
+          "value": "1",
+          "checked": true
+        }
+      ],
+      "category": "vaInputs"
+    },
+    "662097e1b85f4044a1ff82e156b5456c": {
+      "id": "662097e1b85f4044a1ff82e156b5456c",
+      "name": "record_id",
+      "label": "Record_id",
+      "defaultValue": "record_id",
+      "varType": "string",
+      "category": "vaInputs"
+    },
+    "f7ffbb0347f749869b04eb320a66b66e": {
+      "id": "f7ffbb0347f749869b04eb320a66b66e",
+      "name": "record_table",
+      "label": "Record_table",
+      "defaultValue": "record_table",
+      "varType": "string",
+      "category": "vaInputs"
+    },
+    "13702bc742124d2285c5541e853ee2e8": {
+      "id": "13702bc742124d2285c5541e853ee2e8",
+      "name": "variables",
+      "label": "Variables",
+      "defaultValue": "variables",
+      "varType": "string",
+      "category": "vaInputs"
+    },
+    "5a1c8094c89948f4b1a2f931f4a0324d": {
+      "id": "5a1c8094c89948f4b1a2f931f4a0324d",
+      "name": "catalog_item_id",
+      "label": "Catalog_item_id",
+      "defaultValue": "catalog_item_id",
+      "varType": "string",
+      "category": "vaInputs"
+    },
+    "ba653be16fe548e083131b0caac5e294": {
+      "id": "ba653be16fe548e083131b0caac5e294",
+      "name": "item_type",
+      "label": "Item_type",
+      "defaultValue": "item_type",
+      "varType": "string",
+      "category": "vaInputs"
+    },
+    "2d11c782dea34f198fa10a11efa383c0": {
+      "id": "2d11c782dea34f198fa10a11efa383c0",
+      "name": "is_conversational",
+      "label": "Is_conversational",
+      "defaultValue": "is_conversational",
+      "varType": "string",
+      "category": "vaInputs"
+    },
+    "e66cf296a13a47509af2d1e2dc1278b7": {
+      "id": "e66cf296a13a47509af2d1e2dc1278b7",
+      "name": "search",
+      "label": "Search",
+      "varType": "string",
+      "secure": false,
+      "category": "vaInputs",
+      "encryptionHashFunction": "SHA-256",
+      "encryptionSalt": {
+        "value": "MTYzMTY5MjI2Mzk0MCBWQSBEZXNpZ25lciBpcyBhd2Vzb21l",
+        "mode": "simple"
+      }
+    }
+  }
+}</graph>
+        <key_phrases>Submit a Request,Submit a request (Template),Submit a request,request,buy,item,catalog,purchase,order,computer,phone,need,require,order software,install software,request software</key_phrases>
+        <library>false</library>
+        <live_agent>false</live_agent>
+        <name>Submit a Request</name>
+        <nlu_intent/>
+        <nlu_intent_label/>
+        <nlu_model/>
+        <nlu_model_label/>
+        <nlu_provider/>
+        <palette_label/>
+        <roles/>
+        <source_topic_id>375155b0db3453005dd0dfea5e961934</source_topic_id>
+        <sys_class_name>sys_cb_topic</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2022-01-19 05:31:06</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_id>056cf18f1bc90110b80f40c6cc4bcb43</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>Submit a Request</sys_name>
+        <sys_package display_value="NeedIt" source="x_58872_needit">6ead8e780f603200cd674f8ce1050ed1</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="NeedIt">6ead8e780f603200cd674f8ce1050ed1</sys_scope>
+        <sys_update_name>sys_cb_topic_056cf18f1bc90110b80f40c6cc4bcb43</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2022-01-19 05:33:34</sys_updated_on>
+        <triggerable_by_notification>false</triggerable_by_notification>
+        <type>STANDARD</type>
+        <variables/>
+    </sys_cb_topic>
+    <sys_variable_value action="delete_multiple" query="document_key=056cf18f1bc90110b80f40c6cc4bcb43"/>
+</record_update>
